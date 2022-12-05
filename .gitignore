@@ -1,0 +1,11 @@
+.DS_Store
+.vscode
+
+# Ignore docker-compose variable data file
+.env
+
+# Ignore Twitter cookies file
+twitter_cookies.txt
+
+# Ignore any downloaded data
+data

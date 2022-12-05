@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  bot:
+    image: telegramtweetdownloader
+    container_name: telegramTweetDownloader
+    volumes:
+      - ./data:/bot/gallery-dl
+    restart: unless-stopped
+    environment:
+      # Use environment variables defined in a .env file
+      - T_TOKEN=${T_TOKEN}
+      - ALLOWED_IDS=${ALLOWED_IDS}
