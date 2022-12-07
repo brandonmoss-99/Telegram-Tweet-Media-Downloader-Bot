@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     try:
         # connect to Telegram API with their getMe test method for checking API works
-        testResponse = requests.get("https://api.telegram.org/bot%s/getMe" % (config.tToken))
+        testResponse = requests.get(f"https://api.telegram.org/bot{config.tToken}/getMe")
         # set the token to be used if we get a 2xx response code back
         if testResponse.ok:
             bottoken = config.tToken
@@ -28,10 +28,10 @@ if __name__ == '__main__':
             print("Error validating your token!")
             getHelp()
     except Exception as ex:
-        print("Error trying to validate your token!", ex)
+        print(f"Error trying to validate your token! {ex}")
         getHelp()
     
-    print("--------------------------------------\nProgram started at UNIX time:", int(time.time()), "\n")
+    print(f"--------------------------------------\nProgram started at UNIX time: {int(time.time())}\n")
 
     tMsgSender = tMsgSender(bottoken)
     tMsgFetcher = tMsgFetcher(bottoken, pollTimeout)
