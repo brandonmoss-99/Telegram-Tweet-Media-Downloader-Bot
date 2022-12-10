@@ -1,49 +1,39 @@
-import requests, json, time
-from tMsgSender import tMsgSender
+import json, time
+from tMsgSender import tMsgSender, recievedData
 
-# handles fetching of messages, returning basic message info
+class messageInfo:
+    def __init__(self, ok: bool, result:dict={}, errCode: int=-1, errDesc:str=""):
+        self.tResponseOk: bool = ok
+        self.tResult: dict = result
+        self.errCode: int = errCode
+        self.errDesc: str = errDesc
+
+# handles fetching of messages, returning message info
 class tMsgFetcher:
-    def __init__(self, token, pollTimeout=20):
-        self.token = token
-        self.pollTimeout = pollTimeout
-        self.messages = None
-        self.messagesParsed = None
+    def __init__(self, token: str, pollTimeout: int=20):
+        self.token: str = token
+        self.pollTimeout: int = pollTimeout
 
         # create MsgSender to send requests to fetch new messages, 
         # using the same token for sending as for recieving
-        self.tMsgSender = tMsgSender(token)
+        self.tMsgSender: tMsgSender = tMsgSender(token)
 
     # get new messages, pass in offset of last message to fetch only new ones
     # and mark to telegram servers it can remove messages older than that
-    def fetchMessages(self, msgOffset):
+    def fetchMessages(self, msgOffset: int):
         # get updates via long polling (sends HTTPS request, won't hear anything back from API server)
         # until there is a new update to send back, may hang here for a while
         # define which updates want telegram to send us, ignore every other update type
-        updatesToFetch = '["message", "callback_query"]'
-        updateRequest = self.tMsgSender.sendRequest(["getUpdates", "offset", msgOffset, "timeout", self.pollTimeout, "allowed_updates", updatesToFetch])
-        if updateRequest[0] == True:
-            self.messagesParsed = json.loads(updateRequest[2])
-            return True
+        updatesToFetch: str = '["message"]'
+        updateResponse: recievedData = self.tMsgSender.sendRequest(["getUpdates", "offset", msgOffset, "timeout", self.pollTimeout, "allowed_updates", updatesToFetch])
+
+        if not updateResponse.isErr:
+            self.messagesParsed = json.loads(updateResponse.content)
+
+            if self.messagesParsed['ok']:
+                return messageInfo(True, result=self.messagesParsed['result'])
+            else:
+                return messageInfo(False, errCode=self.messagesParsed['error_code'], errDesc=self.messagesParsed['description'])
         else:
-            print("timestamp:", int(time.time()), "Failed to fetch new messages!", updateRequest[2])
-            return False
-
-    # loop through each parsed message stored in the messageFetcher
-    def printAllMessages(self):
-        for i in range(0, len(self.messagesParsed['result'])):
-            print(self.messagesParsed['result'][i],'\n\n')
-
-    def getMessagesLength(self):
-        return len(self.messagesParsed['result'])
-
-    # return all messages stored in class
-    def getMessages(self):
-        return self.messagesParsed
-
-    # return specific message stored in class by position
-    def getMessage(self, pos):
-        return self.messagesParsed['result'][pos]
-
-    # print specific message stored in class by position
-    def printMessage(self, pos):
-        print(self.messagesParsed['result'][pos])
+            print(f"Timestamp: {int(time.time())} Failed to fetch new messages! Got HTTP {updateResponse.statusCode} - {updateResponse.errDetails}")
+            return messageInfo(False, errCode=updateResponse.statusCode, errDesc=updateResponse.errDetails)

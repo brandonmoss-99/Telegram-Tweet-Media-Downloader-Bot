@@ -1,64 +1,69 @@
-import time, sys, requests, random, json
+import time, sys, requests, random, json, logging
 from tMsgSender import tMsgSender
-from tMsgFetcher import tMsgFetcher
+from tMsgFetcher import tMsgFetcher, messageInfo
 from tMsgHandler import tMsgHandler
 from config import Config
 
 def getHelp():
     # print help information, then quit
-    print("\nList of options:\n\n"+
+    logging.info("\nList of options:\n\n"+
         "(t)oken to use for telegram bot API [token]\n")
     sys.exit(0)
 
 if __name__ == '__main__':
-    # Telegram Polling Configuration
-    msgOffset = 0
-    pollTimeout = 60
+    logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s', level=logging.INFO)
 
-    config = Config()
+    logging.info("Loading configuration")
+    config: Config = Config()
     config.loadEnvVars()
 
+    # Telegram Polling Configuration
+    msgOffset: int = 0
+    pollTimeout: int = 120
+    logging.info(f"Using max long polling timeout of {pollTimeout} seconds")
+
     try:
+        logging.info("Attempting to verify Telegram API token")
         # connect to Telegram API with their getMe test method for checking API works
-        testResponse = requests.get("https://api.telegram.org/bot%s/getMe" % (config.tToken))
+        testResponse: requests.Response = requests.get(f"https://api.telegram.org/bot{config.tToken}/getMe")
         # set the token to be used if we get a 2xx response code back
         if testResponse.ok:
-            bottoken = config.tToken
+            bottoken: str = config.tToken
+            logging.info("Telegram API token OK")
         else:
-            print("Error validating your token!")
+            logging.error("Telegram API check failed")
             getHelp()
     except Exception as ex:
-        print("Error trying to validate your token!", ex)
+        logging.error("Telegram API token verification failed", exc_info=ex)
         getHelp()
-    
-    print("--------------------------------------\nProgram started at UNIX time:", int(time.time()), "\n")
 
     tMsgSender = tMsgSender(bottoken)
     tMsgFetcher = tMsgFetcher(bottoken, pollTimeout)
     tMsgHandler = tMsgHandler(bottoken, tMsgSender, config)
 
-    botInfo = json.loads(tMsgSender.sendRequest(["getMe"])[2])['result']
+    logging.info("Getting Bot info from Telegram")
+    botInfo = json.loads(tMsgSender.sendRequest(["getMe"]).content)['result']
     bot_id = botInfo['id']
     bot_username = botInfo['username']
+    logging.info(f"Got bot info - ID: {bot_id}, username: {bot_username}")
 
     while True:
         # fetch all the new messages from Telegram servers
-        if tMsgFetcher.fetchMessages(msgOffset):
-            # for each message in the list of new messages
-            for i in range(tMsgFetcher.getMessagesLength()):
-                # get the message
-                msg = tMsgFetcher.getMessage(i)
-                if 'message' in msg:
-                    # check the message type and hand message off to handler
-                    tMsgHandler.handleMessage(msg)
-                
-                # update the message offset, so it is 'forgotten' by telegram servers
-                # and not returned again on next fetch for new messages, as we've
-                # (hopefully) dealt with the message now
-                msgOffset = msg['update_id'] + 1
+        logging.info("Sending off to wait for new data")
+        response: messageInfo = tMsgFetcher.fetchMessages(msgOffset)
+        logging.info("Received new Telegram data")
+        if response.tResponseOk:
+            logging.info("Telegram response was OK")
+            for msg in response.tResult:
+                logging.info("Handling message(s)")
+                tMsgHandler.handleMessage(msg)  # Let handler deal with it
+                msgOffset = msg['update_id'] + 1  # Update msg offset
+                logging.info(f"Message offset updated to {msgOffset}")
         else:
-                # failed to fetch new messages, wait for random number of seconds then try again
-                # (may reduce strain on telegram servers when requests are randomly distributed if
-                # they go down, instead of happening at fixed rate along with many other bots etc)
-                time.sleep(random.randint(pollTimeout, pollTimeout*2))
-
+            logging.warn(f"Telegram response indicated error! {response.errCode} - {response.errDesc}")
+            # failed to fetch new messages, wait for random number of seconds then try again
+            # (may reduce strain on telegram servers when requests are randomly distributed if
+            # they go down, instead of happening at fixed rate along with many other bots etc)
+            sleepTime: int = random.randint(pollTimeout, pollTimeout*2)
+            logging.info(f"Sleeping for {sleepTime} seconds")
+            time.sleep(sleepTime)
