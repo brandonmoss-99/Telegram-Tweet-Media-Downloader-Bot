@@ -1,6 +1,39 @@
 import os, logging
 
 class Config:
+    def __init__(self) -> None:
+        rawLogLevel: str|None = os.environ.get("LOG_LEVEL")
+
+        match rawLogLevel:
+            case str(x):
+                match x.lower():
+                    case "debug":
+                        self.logLevel = logging.DEBUG
+                        self.printLogLevel(x)
+                    case "info":
+                        self.logLevel = logging.INFO
+                        self.printLogLevel(x)
+                    case "warn" | "warning":
+                        self.logLevel = logging.WARN
+                        self.printLogLevel(x)
+                    case "error" | "err":
+                        self.logLevel = logging.ERROR
+                        self.printLogLevel(x)
+                    case "critical" | "crit":
+                        self.logLevel = logging.CRITICAL
+                        self.printLogLevel(x)
+                    case _:
+                        self.logLevel = logging.INFO
+                        self.printLogLevel("info")
+            case _:
+                # The default log level if couldn't find/parse the env variable
+                self.logLevel = logging.INFO
+                self.printLogLevel("info")
+    
+    def printLogLevel(self, level: str) -> None:
+        print(f"Using logger with min log level of {level.upper()}")
+
+
     def loadEnvVars(self) -> None:
         # Load environment variables
         logging.debug("Getting ALLOWED_IDS environment variable")
