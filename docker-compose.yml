@@ -10,3 +10,4 @@ services:
       # Use environment variables defined in a .env file
       - T_TOKEN=${T_TOKEN}
       - ALLOWED_IDS=${ALLOWED_IDS}
+      - LOG_LEVEL=${LOG_LEVEL}

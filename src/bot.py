@@ -11,10 +11,9 @@ def getHelp():
     sys.exit(0)
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s', level=logging.INFO)
-
-    logging.info("Loading configuration")
+    print("Loading configuration")
     config: Config = Config()
+    logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s', level=config.logLevel)
     config.loadEnvVars()
 
     # Telegram Polling Configuration
