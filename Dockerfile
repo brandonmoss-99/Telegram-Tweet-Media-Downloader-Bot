@@ -1,5 +1,5 @@
 # Use the Python 3 Docker image
-FROM python:3.11.0-slim-buster
+FROM python:3.11.1-slim-buster
 
 WORKDIR /bot
 
