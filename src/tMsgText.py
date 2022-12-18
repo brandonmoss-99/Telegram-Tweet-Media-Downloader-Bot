@@ -14,7 +14,7 @@ class tMsgText:
             logging.info(f"Allowed to reply to userID: {self.isfrom['id']}")
             # if message isn't "/start" from new telegram convo
             if self.message['text'] != "/start":
-                urlRegex: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[./])+'
+                urlRegex: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[^?\s])+'
 
                 logging.debug(f"Parsing text against regex")
                 urls: list[str] = re.findall(urlRegex, self.message['text'])
