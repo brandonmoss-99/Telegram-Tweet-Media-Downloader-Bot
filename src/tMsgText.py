@@ -7,6 +7,7 @@ class tMsgText:
         self.getInfo()
         self.tMsgSender = tMsgSender
         self.config = config
+        self.urlRegex: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[^?\s])+'
 
         # Check for userID who sent the msg. Only do stuff if they're allowed to send stuff
         logging.debug(f"Checking if allowed to reply to userID: {self.isfrom['id']}")
@@ -14,12 +15,7 @@ class tMsgText:
             logging.info(f"Allowed to reply to userID: {self.isfrom['id']}")
             # if message isn't "/start" from new telegram convo
             if self.message['text'] != "/start":
-                urlRegex: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[^?\s])+'
-
-                logging.debug(f"Parsing text against regex")
-                urls: list[str] = re.findall(urlRegex, self.message['text'])
-                logging.debug(f"Found {len(urls)} matches")
-
+                urls: list[str] = self.parseRegex(self.message['text'])
                 if len(urls) > 0:
                     for url in urls:
                         # Download the contents of the URL, and send reply
@@ -50,6 +46,12 @@ class tMsgText:
         self.date = self.message['date']
         self.chat = self.message['chat']
         self.isfrom = self.message['from']
+    
+    def parseRegex(self, toParse: str) -> list[str]:
+        logging.debug(f"Parsing text against regex")
+        urls: list[str] = re.findall(self.urlRegex, toParse)
+        logging.debug(f"Found {len(urls)} matches")
+        return urls
 
     def reply(self, data):
         # if succeeded in fetching data for valid station code, reply with info
