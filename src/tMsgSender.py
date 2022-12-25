@@ -3,22 +3,23 @@ import requests, logging
 class tMsgSender:
     def __init__(self, token: str):
         self.token = token
+        self.tAPIUrl: str = f"https://api.telegram.org/bot{self.token}"
 
     def generateRequest(self, msgParams: list):
         logging.debug("Generating request string")
 
-        # if there's multiple parameters, have to append them correctly
-        if len(msgParams) > 3:
-            requestString = "https://api.telegram.org/bot"+str(self.token)+"/"+str(msgParams[0])+"?"
-            # skip the 0th item, already appended it to the requestString
-            for i in range(1, len(msgParams)-3, 2):
-                requestString = requestString + str(msgParams[i]) + "=" + str(msgParams[i+1]) + "&"
-            requestString = requestString + str(msgParams[-2]) + "=" + str(msgParams[-1])
-        elif len(msgParams) > 1:
-            requestString = "https://api.telegram.org/bot"+str(self.token)+"/"+str(msgParams[0])+"?"\
-                +str(msgParams[1])+ "=" + str(msgParams[2])
-        else:
-            requestString = f"https://api.telegram.org/bot{str(self.token)}/{str(msgParams[0])}"
+        match msgParams:
+            # if there's multiple parameters, have to append them correctly
+            case p if len(msgParams) > 3:
+                requestString = f"{self.tAPIUrl}/{str(p[0])}?"
+                # skip the 0th item, already appended it to the requestString
+                for i in range(1, len(p)-3, 2):
+                    requestString = f"{requestString}{str(p[i])}={str(p[i+1])}&"
+                requestString = f"{requestString}{str(p[-2])}={str(p[-1])}"
+            case p if len(msgParams) > 1:
+                requestString = f"{self.tAPIUrl}/{str(p[0])}?{str(p[1])}={str(p[2])}"
+            case p:
+                requestString = f"{self.tAPIUrl}/{str(p[0])}"
         logging.debug(f"Generated request string: {requestString}")
         return requestString
 
