@@ -11,34 +11,24 @@ class tMsgText:
 
         # Check for userID who sent the msg. Only do stuff if they're allowed to send stuff
         logging.debug(f"Checking if allowed to reply to userID: {self.isfrom['id']}")
-        if self.isfrom['id'] in self.config.allowedIds:
-            logging.info(f"Allowed to reply to userID: {self.isfrom['id']}")
-            # if message isn't "/start" from new telegram convo
-            if self.message['text'] != "/start":
-                urls: list[str] = self.parseRegex(self.message['text'])
-                if len(urls) > 0:
-                    for url in urls:
-                        # Download the contents of the URL, and send reply
-                        logging.info(f"Attempting to gallery-dl download content from: {url}")
-                        dlStatus: int = os.system(f"gallery-dl \"{url}\"")
-                        match dlStatus:
-                            case 0: 
-                                logging.info(f"Replying success for {url} to userID {self.isfrom['id']}")
-                                self.reply([True, url])
-                            case _: 
-                                logging.info(f"Replying failed download for {url} to userID {self.isfrom['id']}")
-                                self.reply([False, f"Encountered an error whilst downloading content for {url}"])
-                else:
-                    logging.info(f"Replying couldn't find URL to userID {self.isfrom['id']}")
-                    self.reply([False, "Couldn't find a valid URL to use"])
-
-            else:
+        if self.isfrom['id'] not in self.config.allowedIds:
+            logging.info(f"Not allowed to process things from userID: {self.isfrom['id']}, sending not on allow list message")
+            self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Sorry, you're not on my allow list! Zzzz...", "disable_web_page_preview", True, "disable_notification", True])
+            return
+        
+        logging.info(f"Allowed to reply to userID: {self.isfrom['id']}")
+        match self.message['text']:
+            case "/start":
                 # what to say when a new person talks to the bot
                 logging.info(f"Received /start message from userID {self.isfrom['id']}, replying with info text")
                 self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Hi! Please send a URL to get started!", "disable_web_page_preview", True, "disable_notification", True])
-        else:
-            logging.info(f"Not allowed to process things from userID: {self.isfrom['id']}, sending not on allow list message")
-            self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Sorry, you're not on my allow list! Zzzz...", "disable_web_page_preview", True, "disable_notification", True])
+            case msg:
+                urls: list[str] = self.parseRegex(msg)
+                if len(urls) > 0:
+                    self.downloadContent(urls)
+                else:
+                    logging.info(f"Replying couldn't find URL to userID {self.isfrom['id']}")
+                    self.reply([False, "Couldn't find a valid URL to use"])
 
     def getInfo(self):
         # extract always included message data
@@ -52,6 +42,19 @@ class tMsgText:
         urls: list[str] = re.findall(self.urlRegex, toParse)
         logging.debug(f"Found {len(urls)} matches")
         return urls
+    
+    def downloadContent(self, urls: list[str]):
+        for url in urls:
+            # Download the contents of the URL, and send reply
+            logging.info(f"Attempting to gallery-dl download content from: {url}")
+            dlStatus: int = os.system(f"gallery-dl \"{url}\"")
+            match dlStatus:
+                case 0: 
+                    logging.info(f"Replying success for {url} to userID {self.isfrom['id']}")
+                    self.reply([True, url])
+                case _: 
+                    logging.info(f"Replying failed download for {url} to userID {self.isfrom['id']}")
+                    self.reply([False, f"Encountered an error whilst downloading content for {url}"])
 
     def reply(self, data):
         # if succeeded in fetching data for valid station code, reply with info
