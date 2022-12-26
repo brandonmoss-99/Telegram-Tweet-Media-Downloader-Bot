@@ -1,6 +1,9 @@
 .DS_Store
 .vscode
 
+# Ignore compiled stuff
+__pycache__
+
 # Ignore docker-compose variable data file
 .env
 
