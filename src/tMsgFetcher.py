@@ -1,4 +1,4 @@
-import json, time
+import json, logging
 from tMsgSender import tMsgSender, recievedData
 
 class messageInfo:
@@ -13,6 +13,7 @@ class tMsgFetcher:
     def __init__(self, token: str, pollTimeout: int=20):
         self.token: str = token
         self.pollTimeout: int = pollTimeout
+        self.updatesToFetch: str = '["message"]'
 
         # create MsgSender to send requests to fetch new messages, 
         # using the same token for sending as for recieving
@@ -23,17 +24,14 @@ class tMsgFetcher:
     def fetchMessages(self, msgOffset: int):
         # get updates via long polling (sends HTTPS request, won't hear anything back from API server)
         # until there is a new update to send back, may hang here for a while
-        # define which updates want telegram to send us, ignore every other update type
-        updatesToFetch: str = '["message"]'
-        updateResponse: recievedData = self.tMsgSender.sendRequest(["getUpdates", "offset", msgOffset, "timeout", self.pollTimeout, "allowed_updates", updatesToFetch])
+        updateResponse: recievedData = self.tMsgSender.sendRequest(["getUpdates", "offset", msgOffset, "timeout", self.pollTimeout, "allowed_updates", self.updatesToFetch])
 
-        if not updateResponse.isErr:
-            self.messagesParsed = json.loads(updateResponse.content)
-
-            if self.messagesParsed['ok']:
-                return messageInfo(True, result=self.messagesParsed['result'])
-            else:
-                return messageInfo(False, errCode=self.messagesParsed['error_code'], errDesc=self.messagesParsed['description'])
-        else:
-            print(f"Timestamp: {int(time.time())} Failed to fetch new messages! Got HTTP {updateResponse.statusCode} - {updateResponse.errDetails}")
+        if updateResponse.isErr:
+            logging.error(f"Failed to fetch new messages! Got HTTP {updateResponse.statusCode} - {updateResponse.errDetails}")
             return messageInfo(False, errCode=updateResponse.statusCode, errDesc=updateResponse.errDetails)
+
+        messagesParsed = json.loads(updateResponse.content)
+
+        match messagesParsed['ok']:
+            case True: return messageInfo(True, result=messagesParsed['result'])
+            case _: return messageInfo(False, errCode=messagesParsed['error_code'], errDesc=messagesParsed['description'])
