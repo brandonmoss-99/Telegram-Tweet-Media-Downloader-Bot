@@ -12,4 +12,5 @@ class tMsgHandler:
     def handleMessage(self, message):
         if 'text' in message['message']:
             logging.info("Handling message of type 'text'")
-            tMsgText(message['message'], self.tMsgSender, self.config)
+            msg = tMsgText(message['message'], self.tMsgSender, self.config)
+            msg.process()
