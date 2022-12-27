@@ -16,14 +16,23 @@ class tMsgText:
         self.chat = self.message['chat']
         self.isfrom = self.message['from']
 
+    def checkCanReply(self, id) -> bool:
+        logging.debug(f"Checking if allowed to reply to userID: {id}")
+        match id in self.config.allowedIds:
+            case True: 
+                logging.info(f"Allowed to reply to userID: {id}")
+                return True
+            case _:
+                logging.info(f"Not allowed to process things from userID: {id}")
+                return False
+
     def process(self):
         # Check for userID who sent the msg. Only do stuff if they're allowed to send stuff
-        logging.debug(f"Checking if allowed to reply to userID: {self.isfrom['id']}")
-        if self.isfrom['id'] not in self.config.allowedIds:
-            logging.info(f"Not allowed to process things from userID: {self.isfrom['id']}, sending not on allow list message")
+        if self.checkCanReply(self.isfrom['id']) == False:
+            logging.info(f"Sending not on allow list message for userID: {self.isfrom['id']}")
             self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Sorry, you're not on my allow list! Zzzz...", "disable_web_page_preview", True, "disable_notification", True])
             return
-        
+            
         logging.info(f"Allowed to reply to userID: {self.isfrom['id']}")
         match self.message['text']:
             case "/start":
