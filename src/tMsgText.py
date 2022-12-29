@@ -1,12 +1,13 @@
 from tMsgSender import tMsgSender
+from config import Config
 import os, re, logging
 
 class tMsgText:
-    def __init__(self, message, tMsgSender, config):
-        self.message = message
+    def __init__(self, message: dict, sender: tMsgSender, conf: Config):
+        self.message: dict = message
         self.getInfo()
-        self.tMsgSender = tMsgSender
-        self.config = config
+        self.sender: tMsgSender = sender
+        self.conf: Config = conf
         self.urlRegex: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[^?\s])+'
 
 
@@ -20,7 +21,7 @@ class tMsgText:
 
     def checkCanReply(self, id) -> bool:
         logging.debug(f"Checking if allowed to reply to userID: {id}")
-        match id in self.config.allowedIds:
+        match id in self.conf.allowedIds:
             case True: 
                 logging.info(f"Allowed to reply to userID: {id}")
                 return True
@@ -33,14 +34,14 @@ class tMsgText:
         # Check for userID who sent the msg. Only do stuff if they're allowed to send stuff
         if self.checkCanReply(self.isfrom['id']) == False:
             logging.info(f"Sending not on allow list message for userID: {self.isfrom['id']}")
-            self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Sorry, you're not on my allow list! Zzzz...", "disable_web_page_preview", True, "disable_notification", True])
+            self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Sorry, you're not on my allow list! Zzzz...", "disable_web_page_preview", True, "disable_notification", True])
             return
         
         match self.message:
             case _ if 'text' in self.message and self.message['text'] == "/start":
                 # what to say when a new person talks to the bot
                 logging.info(f"Received /start message from userID {self.isfrom['id']}, replying with info text")
-                self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Hi! Please send a URL to get started!", "disable_web_page_preview", True, "disable_notification", True])
+                self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Hi! Please send a URL to get started!", "disable_web_page_preview", True, "disable_notification", True])
             case msg if 'text' in self.message and self.message['text'] != "/start":
                 logging.info(f"Received text message from userID {self.isfrom['id']}")
                 self.doDownloading(msg['text'])
@@ -49,7 +50,7 @@ class tMsgText:
                 self.doDownloading(msg['caption'])
             case _:
                 logging.warning(f"Received incompatible message from userID {self.isfrom['id']}")
-                self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Incompatible message!", "disable_web_page_preview", True, "disable_notification", True])
+                self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Incompatible message!", "disable_web_page_preview", True, "disable_notification", True])
         
 
     def doDownloading(self, text):
@@ -86,7 +87,7 @@ class tMsgText:
         # if succeeded in fetching data for valid station code, reply with info
         if data[0] == True:
             logging.debug(f"Sending sendMessage request to chat_id {self.chat['id']} with text 'Done for URL {data[1]}'")
-            self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", f"Done for URL {data[1]}", "disable_web_page_preview", True, "disable_notification", True])
+            self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", f"Done for URL {data[1]}", "disable_web_page_preview", True, "disable_notification", True])
         else:
             logging.debug(f"Sending sendMessage request to chat_id {self.chat['id']} with text 'Failed! {data[1]}'")
-            self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", f"Failed! {data[1]}", "disable_web_page_preview", True, "disable_notification", True])
+            self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", f"Failed! {data[1]}", "disable_web_page_preview", True, "disable_notification", True])

@@ -12,9 +12,9 @@ def getHelp():
 
 if __name__ == '__main__':
     print("Loading configuration")
-    config: Config = Config()
-    logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s', level=config.logLevel)
-    config.loadEnvVars()
+    conf: Config = Config()
+    logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s', level=conf.logLevel)
+    conf.loadEnvVars()
 
     # Telegram Polling Configuration
     msgOffset: int = 0
@@ -24,11 +24,11 @@ if __name__ == '__main__':
     try:
         logging.info("Attempting to verify Telegram API token")
         # connect to Telegram API with their getMe test method for checking API works
-        testResponse: requests.Response = requests.get(f"https://api.telegram.org/bot{config.tToken}/getMe")
+        testResponse: requests.Response = requests.get(f"https://api.telegram.org/bot{conf.tToken}/getMe")
         # set the token to be used if we get a 2xx response code back
         match testResponse.ok:
             case True:
-                bottoken: str = config.tToken
+                bottoken: str = conf.tToken
                 logging.info("Telegram API token OK")
             case _:
                 logging.error("Telegram API check failed")
@@ -37,11 +37,11 @@ if __name__ == '__main__':
         logging.error("Telegram API token verification failed", exc_info=ex)
         getHelp()
 
-    tMsgSender = tMsgSender(bottoken)
-    tMsgFetcher = tMsgFetcher(bottoken, pollTimeout)
+    sender: tMsgSender = tMsgSender(bottoken)
+    fetcher: tMsgFetcher = tMsgFetcher(bottoken, pollTimeout)
 
     logging.info("Getting Bot info from Telegram")
-    botInfo = json.loads(tMsgSender.sendRequest(["getMe"]).content)['result']
+    botInfo = json.loads(sender.sendRequest(["getMe"]).content)['result']
     bot_id = botInfo['id']
     bot_username = botInfo['username']
     logging.info(f"Got bot info - ID: {bot_id}, username: {bot_username}")
@@ -49,14 +49,14 @@ if __name__ == '__main__':
     while True:
         # fetch all the new messages from Telegram servers
         logging.info("Sending off to wait for new data")
-        response: messageInfo = tMsgFetcher.fetchMessages(msgOffset)
+        response: messageInfo = fetcher.fetchMessages(msgOffset)
         logging.info("Received new Telegram data")
         match response.tResponseOk:
             case True:
                 logging.info("Telegram response was OK")
                 for msg in response.tResult:
                     logging.info("Handling message(s)")
-                    tMsgText(msg['message'], tMsgSender, config).process()
+                    tMsgText(msg['message'], sender, conf).process()
                     msgOffset = msg['update_id'] + 1  # Update msg offset
                     logging.info(f"Message offset updated to {msgOffset}")
             case _:
