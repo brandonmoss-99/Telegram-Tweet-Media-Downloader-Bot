@@ -1,7 +1,7 @@
 import time, sys, requests, random, json, logging
 from tMsgSender import tMsgSender
 from tMsgFetcher import tMsgFetcher, messageInfo
-from tMsgHandler import tMsgHandler
+from tMsgText import tMsgText
 from config import Config
 
 def getHelp():
@@ -38,7 +38,6 @@ if __name__ == '__main__':
 
     tMsgSender = tMsgSender(bottoken)
     tMsgFetcher = tMsgFetcher(bottoken, pollTimeout)
-    tMsgHandler = tMsgHandler(bottoken, tMsgSender, config)
 
     logging.info("Getting Bot info from Telegram")
     botInfo = json.loads(tMsgSender.sendRequest(["getMe"]).content)['result']
@@ -55,7 +54,7 @@ if __name__ == '__main__':
             logging.info("Telegram response was OK")
             for msg in response.tResult:
                 logging.info("Handling message(s)")
-                tMsgHandler.handleMessage(msg)  # Let handler deal with it
+                tMsgText(msg['message'], tMsgSender, config).process()
                 msgOffset = msg['update_id'] + 1  # Update msg offset
                 logging.info(f"Message offset updated to {msgOffset}")
         else:
