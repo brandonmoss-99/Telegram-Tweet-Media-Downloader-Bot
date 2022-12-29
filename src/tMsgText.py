@@ -84,7 +84,6 @@ class tMsgText:
 
 
     def reply(self, data):
-        # if succeeded in fetching data for valid station code, reply with info
         if data[0] == True:
             logging.debug(f"Sending sendMessage request to chat_id {self.chat['id']} with text 'Done for URL {data[1]}'")
             self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", f"Done for URL {data[1]}", "disable_web_page_preview", True, "disable_notification", True])
