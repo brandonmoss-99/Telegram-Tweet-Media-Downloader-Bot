@@ -36,18 +36,20 @@ class tMsgText:
             self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Sorry, you're not on my allow list! Zzzz...", "disable_web_page_preview", True, "disable_notification", True])
             return
         
-        # If text isn't in the message, the user most likely sent media with text in the caption instead
-        if 'text' not in self.message and 'caption' in self.message:
-            self.doDownloading(self.message['caption'])
-            return
-        
-        match self.message['text']:
-            case "/start":
+        match self.message:
+            case _ if 'text' in self.message and self.message['text'] == "/start":
                 # what to say when a new person talks to the bot
                 logging.info(f"Received /start message from userID {self.isfrom['id']}, replying with info text")
                 self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Hi! Please send a URL to get started!", "disable_web_page_preview", True, "disable_notification", True])
-            case msg:
-                self.doDownloading(msg)
+            case msg if 'text' in self.message and self.message['text'] != "/start":
+                logging.info(f"Received text message from userID {self.isfrom['id']}")
+                self.doDownloading(msg['text'])
+            case msg if 'caption' in self.message:
+                logging.info(f"Received media message with caption text from userID {self.isfrom['id']}")
+                self.doDownloading(msg['caption'])
+            case _:
+                logging.warn(f"Received incompatible message from userID {self.isfrom['id']}")
+                self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Incompatible message!", "disable_web_page_preview", True, "disable_notification", True])
         
 
     def doDownloading(self, text):
