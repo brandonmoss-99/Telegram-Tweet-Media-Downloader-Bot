@@ -44,19 +44,22 @@ class tMsgText:
                 self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Hi! Please send a URL to get started!", "disable_web_page_preview", True, "disable_notification", True])
             case msg if 'text' in self.message and self.message['text'] != "/start":
                 logging.info(f"Received text message from userID {self.isfrom['id']}")
-                self.doDownloading(msg['text'])
+                self.downloadAndRespond(msg['text'])
             case msg if 'caption' in self.message:
                 logging.info(f"Received media message with caption text from userID {self.isfrom['id']}")
-                self.doDownloading(msg['caption'])
+                self.downloadAndRespond(msg['caption'])
             case _:
                 logging.warning(f"Received incompatible message from userID {self.isfrom['id']}")
                 self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Incompatible message!", "disable_web_page_preview", True, "disable_notification", True])
         
 
-    def doDownloading(self, text):
+    def downloadAndRespond(self, text):
         urls: list[str] = self.parseRegex(text)
         if len(urls) > 0:
-            self.downloadContent(urls)
+            logging.debug(f"Mapping URLs to download and respond to")
+            # Map() returns an iterator, and won't process any elements until told to.
+            # Use the list() to force all elements to be processed
+            list(map(lambda x: self.handleDownloadOutcome(self.downloadUrl(x)), urls))
         else:
             logging.info(f"Replying couldn't find URL to userID {self.isfrom['id']}")
             self.reply([False, "Couldn't find a valid URL to use"])
@@ -69,18 +72,19 @@ class tMsgText:
         return urls
     
 
-    def downloadContent(self, urls: list[str]):
-        for url in urls:
-            # Download the contents of the URL, and send reply
-            logging.info(f"Attempting to gallery-dl download content from: {url}")
-            dlStatus: int = os.system(f"gallery-dl \"{url}\"")
-            match dlStatus:
-                case 0: 
-                    logging.info(f"Replying success for {url} to userID {self.isfrom['id']}")
-                    self.reply([True, url])
-                case _: 
-                    logging.info(f"Replying failed download for {url} to userID {self.isfrom['id']}")
-                    self.reply([False, f"Encountered an error whilst downloading content for {url}"])
+    def downloadUrl(self, url: str) -> tuple[str, int]:
+        logging.info(f"Attempting to gallery-dl download content from: {url}")
+        return (url, os.system(f"gallery-dl \"{url}\""))
+    
+
+    def handleDownloadOutcome(self, downloadResult: tuple[str, int]) -> None:
+        match downloadResult[1]:
+            case 0: 
+                logging.info(f"Replying success for {downloadResult[0]} to userID {self.isfrom['id']}")
+                self.reply([True, downloadResult[0]])
+            case _: 
+                logging.info(f"Replying failed download for {downloadResult[0]} to userID {self.isfrom['id']}")
+                self.reply([False, f"Encountered an error whilst downloading content for {downloadResult[0]}"])
 
 
     def reply(self, data):
