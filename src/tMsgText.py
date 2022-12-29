@@ -48,7 +48,7 @@ class tMsgText:
                 logging.info(f"Received media message with caption text from userID {self.isfrom['id']}")
                 self.doDownloading(msg['caption'])
             case _:
-                logging.warn(f"Received incompatible message from userID {self.isfrom['id']}")
+                logging.warning(f"Received incompatible message from userID {self.isfrom['id']}")
                 self.tMsgSender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Incompatible message!", "disable_web_page_preview", True, "disable_notification", True])
         
 

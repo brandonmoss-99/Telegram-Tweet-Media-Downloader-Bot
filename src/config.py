@@ -14,7 +14,7 @@ class Config:
                         self.setLogLevel(logging.INFO)
                         self.printLogLevel(x)
                     case "warn" | "warning":
-                        self.setLogLevel(logging.WARN)
+                        self.setLogLevel(logging.WARNING)
                         self.printLogLevel(x)
                     case "error" | "err":
                         self.setLogLevel(logging.ERROR)
@@ -49,7 +49,7 @@ class Config:
             logging.debug("ALLOWED_IDS list parse successful")
         else:
             self.setAllowedIds([])
-            logging.warn("ALLOWED_IDS list parse couldn't find any IDS, not allowing anyone to talk to the bot for security")
+            logging.warning("ALLOWED_IDS list parse couldn't find any IDS, not allowing anyone to talk to the bot for security")
         
         logging.info("Parsing Telegram token")
         if type(rawToken) == str:

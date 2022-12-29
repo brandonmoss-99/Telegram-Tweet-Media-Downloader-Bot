@@ -60,7 +60,7 @@ if __name__ == '__main__':
                     msgOffset = msg['update_id'] + 1  # Update msg offset
                     logging.info(f"Message offset updated to {msgOffset}")
             case _:
-                logging.warn(f"Telegram response indicated error! {response.errCode} - {response.errDesc}")
+                logging.warning(f"Telegram response indicated error! {response.errCode} - {response.errDesc}")
                 # failed to fetch new messages, wait for random number of seconds then try again
                 sleepTime: int = random.randint(pollTimeout, pollTimeout*2)
                 logging.info(f"Sleeping for {sleepTime} seconds")
