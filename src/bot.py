@@ -45,7 +45,7 @@ class bot:
     
     def getBotInfo(self):
         logging.info("Getting Bot info from Telegram")
-        self.botInfo = json.loads(self.sender.sendRequest(["getMe"]).content)['result']
+        self.botInfo = json.loads(self.sender.sendGetMe().content)['result']
         self.bot_id = self.botInfo['id']
         self.bot_username = self.botInfo['username']
         logging.info(f"Got bot info - ID: {self.bot_id}, username: {self.bot_username}")

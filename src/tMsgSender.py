@@ -1,11 +1,19 @@
 import requests, logging
 
+class recievedData:
+    def __init__(self, isOk: bool, isErr: bool=False, statusCode: int=-1, content: bytes=bytearray(0), errDetails: str=""):
+        self.ok: bool = isOk
+        self.isErr: bool = isErr
+        self.statusCode: int = statusCode
+        self.content: bytes = content
+        self.errDetails: str = errDetails
+
 class tMsgSender:
     def __init__(self, token: str):
         self.token = token
         self.tAPIUrl: str = f"https://api.telegram.org/bot{self.token}"
 
-    def generateRequest(self, msgParams: list):
+    def generateRequest(self, msgParams: list) -> str:
         logging.debug("Generating request string")
 
         match msgParams:
@@ -23,7 +31,20 @@ class tMsgSender:
         logging.debug(f"Generated request string: {requestString}")
         return requestString
 
-    def sendRequest(self, msgParams: list):
+    def sendGetMe(self) -> recievedData:
+        return self.sendRequest(["getMe"])
+    
+    def sendGetUpdates(self, msgOffset: int, pollTimeout: int, updatesToFetch: str) -> recievedData:
+        return self.sendRequest(["getUpdates", "offset", msgOffset, "timeout", pollTimeout, "allowed_updates", updatesToFetch])
+
+    def sendMessage(self, text: str, chat_id: str) -> recievedData:
+        return self.sendRequest(["sendMessage", "chat_id", chat_id, "text", text, "disable_web_page_preview", True])
+    
+    def sendSilentMessage(self, text: str, chat_id: str) -> recievedData:
+        return self.sendRequest(["sendMessage", "chat_id", chat_id, "text", text, "disable_web_page_preview", True, "disable_notification", True])
+
+
+    def sendRequest(self, msgParams: list) -> recievedData:
         requestString = self.generateRequest(msgParams)
 
         try:
@@ -32,11 +53,3 @@ class tMsgSender:
             return recievedData(request.ok, statusCode=request.status_code, content=request.content)
         except Exception as e:
             return recievedData(isOk=False, isErr=True, errDetails=f"Error making request {requestString}, {str(e)}" )
-
-class recievedData:
-    def __init__(self, isOk: bool, isErr: bool=False, statusCode: int=-1, content: bytes=bytearray(0), errDetails: str=""):
-        self.ok: bool = isOk
-        self.isErr: bool = isErr
-        self.statusCode: int = statusCode
-        self.content: bytes = content
-        self.errDetails: str = errDetails

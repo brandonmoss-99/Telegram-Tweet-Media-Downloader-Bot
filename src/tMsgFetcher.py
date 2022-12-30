@@ -24,7 +24,7 @@ class tMsgFetcher:
     def fetchMessages(self, msgOffset: int):
         # get updates via long polling (sends HTTPS request, won't hear anything back from API server)
         # until there is a new update to send back, may hang here for a while
-        updateResponse: recievedData = self.sender.sendRequest(["getUpdates", "offset", msgOffset, "timeout", self.pollTimeout, "allowed_updates", self.updatesToFetch])
+        updateResponse: recievedData = self.sender.sendGetUpdates(msgOffset, self.pollTimeout, self.updatesToFetch)
 
         if updateResponse.isErr:
             logging.error(f"Failed to fetch new messages! Got HTTP {updateResponse.statusCode} - {updateResponse.errDetails}")
