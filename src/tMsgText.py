@@ -34,14 +34,14 @@ class tMsgText:
         # Check for userID who sent the msg. Only do stuff if they're allowed to send stuff
         if self.checkCanReply(self.isfrom['id']) == False:
             logging.info(f"Sending not on allow list message for userID: {self.isfrom['id']}")
-            self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Sorry, you're not on my allow list! Zzzz...", "disable_web_page_preview", True, "disable_notification", True])
+            self.sender.sendSilentMessage("Sorry, you're not on my allow list! Zzzz...", self.chat['id'])
             return
         
         match self.message:
             case _ if 'text' in self.message and self.message['text'] == "/start":
                 # what to say when a new person talks to the bot
                 logging.info(f"Received /start message from userID {self.isfrom['id']}, replying with info text")
-                self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Hi! Please send a URL to get started!", "disable_web_page_preview", True, "disable_notification", True])
+                self.sender.sendSilentMessage("Hi! Please send a URL to get started!", self.chat['id'])
             case msg if 'text' in self.message and self.message['text'] != "/start":
                 logging.info(f"Received text message from userID {self.isfrom['id']}")
                 self.downloadAndRespond(msg['text'])
@@ -50,7 +50,7 @@ class tMsgText:
                 self.downloadAndRespond(msg['caption'])
             case _:
                 logging.warning(f"Received incompatible message from userID {self.isfrom['id']}")
-                self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", "Incompatible message!", "disable_web_page_preview", True, "disable_notification", True])
+                self.sender.sendSilentMessage("Incompatible message!", self.chat['id'])
         
 
     def downloadAndRespond(self, text):
@@ -90,7 +90,7 @@ class tMsgText:
     def reply(self, data):
         if data[0] == True:
             logging.debug(f"Sending sendMessage request to chat_id {self.chat['id']} with text 'Done for URL {data[1]}'")
-            self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", f"Done for URL {data[1]}", "disable_web_page_preview", True, "disable_notification", True])
+            self.sender.sendSilentMessage(f"Done for URL {data[1]}", self.chat['id'])
         else:
             logging.debug(f"Sending sendMessage request to chat_id {self.chat['id']} with text 'Failed! {data[1]}'")
-            self.sender.sendRequest(["sendMessage", "chat_id", self.chat['id'], "text", f"Failed! {data[1]}", "disable_web_page_preview", True, "disable_notification", True])
+            self.sender.sendSilentMessage(f"Failed! {data[1]}", self.chat['id'])
