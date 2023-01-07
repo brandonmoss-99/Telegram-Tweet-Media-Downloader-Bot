@@ -1,3 +1,7 @@
+LABEL org.opencontainers.image.source=https://github.com/brandonmoss-99/Telegram-Tweet-Media-Downloader-Bot
+LABEL org.opencontainers.image.description="A telegram bot which downloads media from twitter links sent to it"
+LABEL org.opencontainers.image.licenses=GPL-2.0-only
+
 # Use the Python 3 Docker image
 FROM python:3.11.1-slim-buster
 
