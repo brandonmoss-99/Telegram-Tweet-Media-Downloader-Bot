@@ -1,5 +1,5 @@
 # Telegram Tweet Media Downloader Bot
-[![Tests](https://img.shields.io/github/actions/workflow/status/brandonmoss-99/Telegram-Tweet-Media-Downloader-Bot/tests.yml?label=tests&logo=github)](https://github.com/brandonmoss-99/Telegram-Tweet-Media-Downloader-Bot/actions?query=workflow%3ARun%20tests+branch%3Amain)
+[![Tests](https://img.shields.io/github/actions/workflow/status/brandonmoss-99/Telegram-Tweet-Media-Downloader-Bot/tests.yml?label=tests&logo=github)](https://github.com/brandonmoss-99/Telegram-Tweet-Media-Downloader-Bot/actions/workflows/tests.yml)
 [![License](https://img.shields.io/github/license/brandonmoss-99/Telegram-Tweet-Media-Downloader-Bot?logo=github)](https://github.com/brandonmoss-99/Telegram-Tweet-Media-Downloader-Bot/blob/main/LICENSE) [![Docker image pulls](https://img.shields.io/docker/pulls/brandonmoss99/telegram-tweet-media-downloader?logo=docker)](https://hub.docker.com/r/brandonmoss99/telegram-tweet-media-downloader) [![Docker image size](https://img.shields.io/docker/image-size/brandonmoss99/telegram-tweet-media-downloader?logo=docker)](https://hub.docker.com/r/brandonmoss99/telegram-tweet-media-downloader)
 
 ## What does this do?
