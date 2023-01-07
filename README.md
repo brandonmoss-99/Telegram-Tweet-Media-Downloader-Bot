@@ -13,7 +13,7 @@ The following environment variables are used by the bot, and should be passed in
   - `ALLOWED_IDS` - The Telegram user IDs to accept messages from. This is required, as without it, anyone who finds your bot username on Telegram will be able to send a link, and download media to your server. Should be a comma separated String of IDs, `"123456,654321"`
 
 #### Optional:
-  - `LOG_LEVEL` - The lowest level of logging to output, can be one of the following: `debug`, `info`, `warn`, `error`, or `critical`. Defaults to `info`
+  - `LOG_LEVEL` - The lowest level of logging to output, as a String. Can be one of the following: `"debug"`, `"info"`, `"warn"`, `"error"`, or `"critical"`. Defaults to `"info"`
 
 ### Cookies
 A valid Twitter cookie file allows gallery-dl to access the same tweets you can see. Without this, it will only be able to access what is publicly visible. A file named `twitter_cookies.txt` should be present in the top directory.
