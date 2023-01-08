@@ -1,8 +1,8 @@
 version: '3.7'
 services:
   bot:
-    image: telegramtweetdownloader
-    container_name: telegramTweetDownloader
+    image: brandonmoss99/telegram-tweet-media-downloader
+    container_name: telegram-tweet-media-downloader
     volumes:
       - ./data:/bot/gallery-dl
     restart: unless-stopped
