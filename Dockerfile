@@ -5,6 +5,8 @@ LABEL org.opencontainers.image.source=https://github.com/brandonmoss-99/Telegram
 LABEL org.opencontainers.image.description="A telegram bot which downloads media from twitter links sent to it"
 LABEL org.opencontainers.image.licenses=GPL-2.0-only
 
+RUN apt-get update && apt-get install tini
+
 WORKDIR /bot
 
 COPY requirements.txt requirements.txt
@@ -19,4 +21,4 @@ COPY twitter_cookies.* /etc/twitter_cookies.txt
 COPY ./src ./src
 
 # Run the bot.py file
-ENTRYPOINT [ "python", "src/bot.py" ]
+ENTRYPOINT [ "/usr/bin/tini", "--", "python", "src/bot.py" ]
