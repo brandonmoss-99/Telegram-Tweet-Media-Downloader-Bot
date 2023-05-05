@@ -5,6 +5,7 @@ services:
     container_name: telegram-tweet-media-downloader
     volumes:
       - ./data:/bot/gallery-dl
+      - ./etc:/etc
     restart: unless-stopped
     environment:
       # Use environment variables defined in a .env file

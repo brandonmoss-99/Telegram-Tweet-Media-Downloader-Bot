@@ -18,6 +18,14 @@ The following environment variables are used by the bot, and should be passed in
 ### Cookies
 A valid Twitter cookie file allows gallery-dl to access the same tweets you can see. Without this, it will only be able to access what is publicly visible. A file named `twitter_cookies.txt` should be present in the top directory.
 
+You can get cookies using this Chrome plugin
+`https://chrome.google.com/webstore/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm`
+
+![image](https://telegraph-image-at3.pages.dev/file/711dfdc0bfcc6d44b3639.png)
+### Docker-compose
+If you want to deploy the project by docker-compose
+You should create the `etc` folder in the same directory as docker-compose
+Then put `twitter_cookies.txt` and `gallery-dl.conf` in
 ### gallery-dl configuration
 gallery-dl accepts a wide range of configuration options. An example `gallery-dl.conf` file is included, but this can be adjusted to your requirements (See [gallery-dl configuration](https://github.com/mikf/gallery-dl#configuration) for more).
 
