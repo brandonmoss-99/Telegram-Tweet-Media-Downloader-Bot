@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install tini
 WORKDIR /bot
 
 COPY requirements.txt requirements.txt
+RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
 # gallery-dl expects the conf to live at /etc/gallery-dl.conf

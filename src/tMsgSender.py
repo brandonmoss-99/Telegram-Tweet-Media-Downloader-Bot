@@ -56,12 +56,15 @@ class tMsgSender:
         
         return self.sendRequest(["sendMediaGroup", "chat_id", chat_id], files=files)
 
-    def sendRequest(self, msgParams: list) -> recievedData:
+    def sendRequest(self, msgParams: list, files=None) -> recievedData:
         requestString = self.generateRequest(msgParams)
 
         try:
-            request: requests.Response = requests.get(requestString)
-            # return True/False for a status code of 2XX, the status code itself and the response content
-            return recievedData(request.ok, statusCode=request.status_code, content=request.content)
+            if files is None:
+                response = requests.get(requestString)
+            else:
+                response = requests.post(requestString, files=files)
+            
+            return recievedData(response.ok, statusCode=response.status_code, content=response.content)
         except Exception as e:
-            return recievedData(isOk=False, isErr=True, errDetails=f"Error making request {requestString}, {str(e)}" )
+            return recievedData(isOk=False, isErr=True, errDetails=f"Error making request {requestString}, {str(e)}")
