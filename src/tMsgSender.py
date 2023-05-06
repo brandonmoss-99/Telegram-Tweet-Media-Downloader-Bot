@@ -43,6 +43,18 @@ class tMsgSender:
     def sendSilentMessage(self, text: str, chat_id: str) -> recievedData:
         return self.sendRequest(["sendMessage", "chat_id", chat_id, "text", text, "disable_web_page_preview", True, "disable_notification", True])
 
+    def sendPhoto(self, photo_path: str, chat_id: str) -> recievedData:
+        return self.sendRequest(["sendPhoto", "chat_id", chat_id], files={"photo": open(photo_path, "rb")})
+
+    def sendVideo(self, video_path: str, chat_id: str) -> recievedData:
+        return self.sendRequest(["sendVideo", "chat_id", chat_id], files={"video": open(video_path, "rb")})
+    
+    def sendMultiplePhotos(self, photo_paths, chat_id: str) -> recievedData:
+        files = []
+        for i, path in enumerate(photo_paths):
+            files.append(("photo" + str(i), open(path, "rb")))
+        
+        return self.sendRequest(["sendMediaGroup", "chat_id", chat_id], files=files)
 
     def sendRequest(self, msgParams: list) -> recievedData:
         requestString = self.generateRequest(msgParams)

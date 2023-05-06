@@ -1,6 +1,6 @@
 from tMsgSender import tMsgSender
 from config import Config
-import os, re, logging
+import os, re, logging,subprocess
 
 class tMsgText:
     def __init__(self, message: dict, sender: tMsgSender, conf: Config):
@@ -74,7 +74,18 @@ class tMsgText:
 
     def downloadUrl(self, url: str) -> tuple[str, int]:
         logging.info(f"Attempting to gallery-dl download content from: {url}")
-        return (url, os.system(f"gallery-dl \"{url}\""))
+        output = subprocess.run(f"gallery-dl \"{url}\"",shell=True, capture_output=True,text=True)
+        recode = output.returncode
+        if output.returncode == 0:
+            outs = output.stdout.replace("#","").replace(" ","").split("\n")
+            res = []
+            for out in outs:
+                if out == "":
+                    continue
+                out = out.replace("./gallery-dl/","/coptyo/mont/115/twittermedia/")
+                res.append(out)
+            self.sender.sendMultiplePhotos(res,self.chat['id'])
+        return (url, recode)
     
 
     def handleDownloadOutcome(self, downloadResult: tuple[str, int]) -> None:
