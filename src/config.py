@@ -42,6 +42,7 @@ class Config:
         logging.debug("Getting T_TOKEN environment variable")
         rawToken: str|None = os.environ.get("T_TOKEN")
         chatid: str|None = os.environ.get("CHATID")
+        send_tg: str|None = os.environ.get("SEND_TG")
 
         # Filter the ID list to only those which are digits, then convert those into ints
         logging.info("Parsing ALLOWED_IDS list")
@@ -63,6 +64,13 @@ class Config:
         if type(chatid) == str:
             self.setChatid(str(chatid))
             logging.debug("chatid parse successful")
+        
+        if type(send_tg) == str and  send_tg == "2":
+            self.setSendtg("2")
+            logging.debug("media will also send to tg")
+        else:
+            self.setSendtg("3")
+            logging.debug("only download")
     
     def setAllowedIds(self, allowed: list) -> None:
         self.allowedIds: list = allowed
@@ -73,6 +81,9 @@ class Config:
 
     def setChatid(self, c: str) -> None:
         self.cChatid: str = c
+
+    def setSendtg(self, s: str) -> None:
+        self.sendTg: str = s
 
     def setLogLevel(self, l: int) -> None:
         self.logLevel: int = l

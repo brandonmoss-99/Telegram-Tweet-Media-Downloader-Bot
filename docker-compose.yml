@@ -13,3 +13,5 @@ services:
       - ALLOWED_IDS=${ALLOWED_IDS}
       - LOG_LEVEL=${LOG_LEVEL}
       - CHATID=${CHATID}
+      # change this to 2  will also send to tg
+      - SEND_TG=3
