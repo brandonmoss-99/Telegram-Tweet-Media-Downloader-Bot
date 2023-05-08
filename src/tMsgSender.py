@@ -66,7 +66,7 @@ class tMsgSender:
                 response = requests.get(requestString)
             else:
                 response = requests.post(requestString, files=files)
-            
+            logging.info(response)
             return recievedData(response.ok, statusCode=response.status_code, content=response.content)
         except Exception as e:
             return recievedData(isOk=False, isErr=True, errDetails=f"Error making request {requestString}, {str(e)}")
