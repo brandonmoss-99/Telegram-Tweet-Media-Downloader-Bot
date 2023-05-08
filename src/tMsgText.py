@@ -83,6 +83,7 @@ class tMsgText:
             for out in outs:
                 if out == "":
                     continue
+                print(out)
                 # out = out.replace("./gallery-dl/","/coptyo/mont/115/twittermedia/")
                 res.append(out)
             self.sender.sendMultiplePhotos(res,self.chat['id'])
@@ -92,6 +93,7 @@ class tMsgText:
     def handleDownloadOutcome(self, downloadResult: tuple[str, int]) -> None:
         match downloadResult[1]:
             case 0: 
+                print("#############################")
                 logging.info(f"Replying success for {downloadResult[0]} to userID {self.isfrom['id']}")
                 self.reply([True, downloadResult[0]])
             case _: 
