@@ -49,7 +49,7 @@ class tMsgSender:
     # def sendVideo(self, video_path: str, chat_id: str) -> recievedData:
     #     return self.sendRequest(["sendVideo", "chat_id", chat_id], files={"video": open(video_path, "rb")})
 
-    def sendMultiplePhotos(self, chat_id: str, photo_files: list, caption: str=None):
+    def sendMultiplePhotos(self, chat_id: str, photo_paths: list, caption: str=None):
         """
         Send multiple photos in a single message
         
@@ -60,8 +60,8 @@ class tMsgSender:
         """
         url = f"{self.tAPIUrl}/sendMediaGroup"
         media = []
-        
-        for photo_file in photo_files:
+        files = [('photo' + str(i), open(photo_path, 'rb')) for i, photo_path in enumerate(photo_paths)]
+        for photo_file in files:
             media.append({
                 "type": "photo",
                 "media": photo_file
