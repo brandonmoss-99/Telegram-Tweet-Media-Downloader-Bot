@@ -48,35 +48,50 @@ class tMsgSender:
 
     # def sendVideo(self, video_path: str, chat_id: str) -> recievedData:
     #     return self.sendRequest(["sendVideo", "chat_id", chat_id], files={"video": open(video_path, "rb")})
-
     def sendMultiplePhotos(self, photo_paths: list, chat_id: str, caption: str=None):
-        # create a media array with photo objects
+        url = f"https://api.telegram.org/bot{self.token}/sendMediaGroup"
         media = []
-        for i, path in enumerate(photo_paths):
-            media.append({"type": "photo", "media": "attach://photo{}".format(i)})
-
-        # create a payload with chat_id and media parameters
-        payload = {"chat_id": chat_id, "media": media}
-
-        # add caption if provided
-        if caption:
-            payload["caption"] = caption
-
-        # create a header with content type and secret token
-        header = {"Content-Type": "multipart/form-data", "X-Telegram-Bot-Api-Secret-Token": self.token}
-
-        # create a files dictionary with photo data
-        files = {}
-        for i, path in enumerate(photo_paths):
-            files["photo{}".format(i)] = open(path, "rb")
-
-        # send a post request to the sendMediaGroup method
-        response = requests.post(self.tAPIUrl + "sendMediaGroup", data=payload, headers=header, files=files)
-
-        # close the files
-        for file in files.values():
-            file.close()
+        for photo_path in photo_paths:
+            media.append({
+                "type": "photo",
+                "media": open(photo_path, "rb")
+            })
+        data = {
+            "chat_id": chat_id,
+            "media": media,
+            "caption": caption
+        }
+        response = requests.post(url, data=data)
         logging.info(response)
+        # return response.json()
+    # def sendMultiplePhotos(self, photo_paths: list, chat_id: str, caption: str=None):
+    #     # create a media array with photo objects
+    #     media = []
+    #     for i, path in enumerate(photo_paths):
+    #         media.append({"type": "photo", "media": "attach://photo{}".format(i)})
+
+    #     # create a payload with chat_id and media parameters
+    #     payload = {"chat_id": chat_id, "media": media}
+
+    #     # add caption if provided
+    #     if caption:
+    #         payload["caption"] = caption
+
+    #     # create a header with content type and secret token
+    #     header = {"Content-Type": "multipart/form-data", "X-Telegram-Bot-Api-Secret-Token": self.token}
+
+    #     # create a files dictionary with photo data
+    #     files = {}
+    #     for i, path in enumerate(photo_paths):
+    #         files["photo{}".format(i)] = open(path, "rb")
+
+    #     # send a post request to the sendMediaGroup method
+    #     response = requests.post(self.tAPIUrl + "sendMediaGroup", data=payload, headers=header, files=files)
+
+    #     # close the files
+    #     for file in files.values():
+    #         file.close()
+    #     logging.info(response)
         # return the response json
         # return response.json()
     # def sendMultiplePhotos(self, photo_paths, chat_id: str) -> recievedData:

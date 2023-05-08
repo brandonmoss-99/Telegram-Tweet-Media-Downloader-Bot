@@ -83,7 +83,6 @@ class tMsgText:
             for out in outs:
                 if out == "":
                     continue
-                print(out)
                 res.append(out)
             self.sender.sendMultiplePhotos(res,self.chat['id'])
         return (url, recode)
