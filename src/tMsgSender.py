@@ -1,4 +1,4 @@
-import requests, logging
+import requests, logging,json
 
 class recievedData:
     def __init__(self, isOk: bool, isErr: bool=False, statusCode: int=-1, content: bytes=bytearray(0), errDetails: str=""):
@@ -75,7 +75,7 @@ class tMsgSender:
         if caption is not None:
             payload["caption"] = caption
         
-        response = requests.post(url, json=payload)
+        response = requests.post(url, json=json.dumps(payload))
         logging.info(response)
         if response.status_code != 200:
             raise Exception(f"Failed to send message. Status code: {response.status_code}")
