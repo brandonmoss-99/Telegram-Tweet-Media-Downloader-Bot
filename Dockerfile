@@ -15,8 +15,8 @@ RUN pip3 install -r requirements.txt
 
 # gallery-dl expects the conf to live at /etc/gallery-dl.conf
 # Both files use .*, so that if the file doesn't exist, Docker won't error
-COPY gallery-dl.* /etc/gallery-dl.conf
-COPY twitter_cookies.* /etc/twitter_cookies.txt
+# COPY gallery-dl.* /etc/gallery-dl.conf
+# COPY twitter_cookies.* /etc/twitter_cookies.txt
 
 # Copy the source files over
 COPY ./src ./src
