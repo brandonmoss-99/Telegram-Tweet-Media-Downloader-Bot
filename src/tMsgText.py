@@ -75,6 +75,7 @@ class tMsgText:
     def downloadUrl(self, url: str) -> tuple[str, int]:
         logging.info(f"Attempting to gallery-dl download content from: {url}")
         output = subprocess.run(f"gallery-dl \"{url}\"",shell=True, capture_output=True,text=True)
+        logging.info(output)
         recode = output.returncode
         print(recode)
         if output.returncode == 0:
