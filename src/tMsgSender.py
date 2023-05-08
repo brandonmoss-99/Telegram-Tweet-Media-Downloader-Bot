@@ -1,4 +1,4 @@
-import requests, logging,json
+import requests, logging
 
 class recievedData:
     def __init__(self, isOk: bool, isErr: bool=False, statusCode: int=-1, content: bytes=bytearray(0), errDetails: str=""):
@@ -76,9 +76,9 @@ class tMsgSender:
         # close the files
         for file in files.values():
             file.close()
-        logging.info(response.json())
+        logging.info(response)
         # return the response json
-        return response.json()
+        # return response.json()
     # def sendMultiplePhotos(self, photo_paths, chat_id: str) -> recievedData:
     #     files = [('photo' + str(i), open(photo_path, 'rb')) for i, photo_path in enumerate(photo_paths)]
     #     logging.info("#####################")
