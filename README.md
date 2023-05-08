@@ -30,3 +30,7 @@ Then put `twitter_cookies.txt` and `gallery-dl.conf` in
 ### gallery-dl configuration
 gallery-dl accepts a wide range of configuration options. An example `gallery-dl.conf` file is included, but this can be adjusted to your requirements (See [gallery-dl configuration](https://github.com/mikf/gallery-dl#configuration) for more).
 
+### send to tg
+create a channel or a group
+set your bot as administrators
+config CHATID in env or docker-compose and change SEND_TG = 2

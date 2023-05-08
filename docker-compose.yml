@@ -12,6 +12,6 @@ services:
       - T_TOKEN=${T_TOKEN}
       - ALLOWED_IDS=${ALLOWED_IDS}
       - LOG_LEVEL=${LOG_LEVEL}
-      - CHATID=${CHATID}
-      # change this to 2  will also send to tg
+      # change this to 2 and set chatid will also send to tg
       - SEND_TG=3
+      - CHATID=${CHATID}

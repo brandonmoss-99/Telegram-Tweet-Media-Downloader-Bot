@@ -76,7 +76,7 @@ class tMsgText:
         logging.info(f"Attempting to gallery-dl download content from: {url}")
         output = subprocess.run(f"gallery-dl \"{url}\"",shell=True, capture_output=True,text=True)
         recode = output.returncode
-        if output.returncode == 0 and self.conf.sendTg == "2":
+        if output.returncode == 0 and self.conf.sendTg == "2" and self.conf.cChatid !="":
             outs = output.stdout.replace("#","").replace(" ","").split("\n")
             logging.info(outs)
             res = []

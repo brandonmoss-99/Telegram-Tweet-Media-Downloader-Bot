@@ -64,7 +64,9 @@ class Config:
         if type(chatid) == str:
             self.setChatid(str(chatid))
             logging.debug("chatid parse successful")
-        
+        else:
+            self.setChatid("")
+            
         if type(send_tg) == str and  send_tg == "2":
             self.setSendtg("2")
             logging.debug("media will also send to tg")
