@@ -76,6 +76,7 @@ class tMsgText:
         logging.info(f"Attempting to gallery-dl download content from: {url}")
         output = subprocess.run(f"gallery-dl \"{url}\"",shell=True, capture_output=True,text=True)
         recode = output.returncode
+        print(recode)
         if output.returncode == 0:
             outs = output.stdout.replace("#","").replace(" ","").split("\n")
             res = []
