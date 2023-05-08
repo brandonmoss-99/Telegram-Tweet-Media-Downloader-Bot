@@ -83,7 +83,7 @@ class tMsgText:
             for out in outs:
                 if out == "":
                     continue
-                out = out.replace("./gallery-dl/","/coptyo/mont/115/twittermedia/")
+                # out = out.replace("./gallery-dl/","/coptyo/mont/115/twittermedia/")
                 res.append(out)
             self.sender.sendMultiplePhotos(res,self.chat['id'])
         return (url, recode)
