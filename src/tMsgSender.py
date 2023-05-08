@@ -49,36 +49,36 @@ class tMsgSender:
     # def sendVideo(self, video_path: str, chat_id: str) -> recievedData:
     #     return self.sendRequest(["sendVideo", "chat_id", chat_id], files={"video": open(video_path, "rb")})
 
-    def sendMultiplePhotos(self,photo_paths: list, chat_id: str,  caption: str=None):
-        """
-        Send multiple photos in a single message
-        
-        Arguments:
-        chat_id: str -- The ID of the chat where message should be sent
-        photo_files: list -- List of file objects representing photos to be sent.
-        caption: str or None -- Caption for the photos. If None, no caption will be sent.
-        """
-        url = f"{self.tAPIUrl}/sendMediaGroup"
+    def sendMultiplePhotos(self, photo_paths: list, chat_id: str, caption: str=None):
+        # create a media array with photo objects
         media = []
-        files = [('photo' + str(i), open(photo_path, 'rb')) for i, photo_path in enumerate(photo_paths)]
-        for photo_file in files:
-            media.append({
-                "type": "photo",
-                "media": photo_file
-            })
-        
-        payload = {
-            "chat_id": chat_id,
-            "media": media
-        }
-        
-        if caption is not None:
+        for i, path in enumerate(photo_paths):
+            media.append({"type": "photo", "media": "attach://photo{}".format(i)})
+
+        # create a payload with chat_id and media parameters
+        payload = {"chat_id": chat_id, "media": media}
+
+        # add caption if provided
+        if caption:
             payload["caption"] = caption
-        
-        response = requests.post(url, json=json.dumps(payload))
-        logging.info(response)
-        if response.status_code != 200:
-            raise Exception(f"Failed to send message. Status code: {response.status_code}")
+
+        # create a header with content type and secret token
+        header = {"Content-Type": "multipart/form-data", "X-Telegram-Bot-Api-Secret-Token": self.secret_token}
+
+        # create a files dictionary with photo data
+        files = {}
+        for i, path in enumerate(photo_paths):
+            files["photo{}".format(i)] = open(path, "rb")
+
+        # send a post request to the sendMediaGroup method
+        response = requests.post(self.base_url + "sendMediaGroup", data=payload, headers=header, files=files)
+
+        # close the files
+        for file in files.values():
+            file.close()
+        logging.info(response.json())
+        # return the response json
+        return response.json()
     # def sendMultiplePhotos(self, photo_paths, chat_id: str) -> recievedData:
     #     files = [('photo' + str(i), open(photo_path, 'rb')) for i, photo_path in enumerate(photo_paths)]
     #     logging.info("#####################")
