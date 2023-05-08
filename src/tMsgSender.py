@@ -43,94 +43,74 @@ class tMsgSender:
     def sendSilentMessage(self, text: str, chat_id: str) -> recievedData:
         return self.sendRequest(["sendMessage", "chat_id", chat_id, "text", text, "disable_web_page_preview", True, "disable_notification", True])
 
-    def sendPhoto(self, chat_id: str, photo_path: str, caption: str=None):
-        """
-        Send a photo
-        
-        Arguments:
-        chat_id: str -- The ID of the chat where message should be sent
-        photo_path: str -- The file path of the photo to be sent.
-        caption: str or None -- Caption for the photo. If None, no caption will be sent.
-        """
-        with open(photo_path, "rb") as file:
-            url = f"{self.tAPIUrl}/sendPhoto"
-            payload = {
-                "chat_id": chat_id,
-                "photo": file
-            }
-
-            if caption is not None:
-                payload["caption"] = caption
-
-            response = requests.post(url, data=payload)
-
-            if response.status_code != 200:
-                raise Exception(f"Failed to send message. Status code: {response.status_code}")
-    
-    def sendVideo(self, chat_id: str, video_path: str, caption: str=None):
-        """
-        Send a video
-        
-        Arguments:
-        chat_id: str -- The ID of the chat where message should be sent
-        video_path: str -- The file path of the video to be sent.
-        caption: str or None -- Caption for the video. If None, no caption will be sent.
-        """
-        with open(video_path, "rb") as file:
-            url = f"{self.tAPIUrl}/sendVideo"
-            payload = {
-                "chat_id": chat_id,
-                "video": file
-            }
-
-            if caption is not None:
-                payload["caption"] = caption
-
-            response = requests.post(url, data=payload)
-
-            if response.status_code != 200:
-                raise Exception(f"Failed to send message. Status code: {response.status_code}")
-    def sendMultiplePhotos(self, chat_id: str, photo_paths: list, caption: str=None):
-        """
-        Send multiple photos
-        
-        Arguments:
-        chat_id: str -- The ID of the chat where message should be sent
-        photo_paths: list -- A list containing the file paths of all photos to be sent.
-        caption: str or None -- Caption for the photos. If None, no caption will be sent.
-        """
-        url = f"{self.tAPIUrl}/sendMediaGroup"
-        
-        media = []
-        
-        for photo_path in photo_paths:
-            with open(photo_path, "rb") as file:
-                media.append({
-                    "type": "photo",
-                    "media": file
-                })
-        
-        payload = {
-            "chat_id": chat_id,
-            "media": media
+    def sendMultipleFiles(self, file_paths, chat_id: str, chat_id2: str) -> recievedData:
+        upload_url_photo = self.tAPIUrl + "/sendPhoto"
+        upload_url_video = self.tAPIUrl + "/sendVideo"
+        upload_url_document = self.tAPIUrl + "/sendDocument"
+        upload_params = {
+            "chat_id": chat_id2
         }
-        
-        if caption is not None:
-            payload["caption"] = caption
-        
-        response = requests.post(url, data=payload)
+        media_group = []
+
+        # 遍历本地媒体列表，根据文件类型上传文件，并获取file_id
+        for media in file_paths:
+            # 判断文件类型，如果是图片，使用sendPhoto方法和photo参数
+            if media.endswith(".jpg"):
+                upload_files = {
+                    "photo": open(media, "rb")
+                }
+                response = requests.post(upload_url_photo, data=upload_params, files=upload_files)
+                file_id = response.json()["result"]["photo"][-1]["file_id"]
+                media_type = "photo"
+            # 判断文件类型，如果是视频，使用sendVideo方法和video参数
+            elif media.endswith(".mp4"):
+                upload_files = {
+                    "video": open(media, "rb")
+                }
+                response = requests.post(upload_url_video, data=upload_params, files=upload_files)
+                file_id = response.json()["result"]["video"]["file_id"]
+                media_type = "video"
+            # 如果文件类型不是图片或视频，跳过该文件，并打印提示信息
+            else:
+                upload_files = {
+                    "document": open(media, "rb")
+                }
+                response = requests.post(upload_url_document, data=upload_params, files=upload_files)
+                file_id = response.json()["result"]["document"]["file_id"]
+                media_type = "document"
+            
+            # 将上传后的媒体信息添加到媒体组中，最多10个
+            if len(media_group) < 10:
+                media_group.append({
+                    "type": media_type,
+                    "media": file_id,
+                })
+            else:
+                print("Media group is full. Cannot add more.")
+                break
+            
+        # 定义要发送的请求的URL，使用sendMediaGroup方法
+        request_url = self.tAPIUrl + "/sendMediaGroup"
+
+        # 定义要发送的请求的参数，使用json格式
+        request_params = {
+            "chat_id": chat_id,
+            "media": media_group
+        }
+
+        # 发送请求，并获取响应
+        response = requests.post(request_url, json=request_params)
         logging.info(response)
 
+            
 
-    def sendRequest(self, msgParams: list, files=None) -> recievedData:
+
+    def sendRequest(self, msgParams: list) -> recievedData:
         requestString = self.generateRequest(msgParams)
 
         try:
-            if files is None:
-                response = requests.get(requestString)
-            else:
-                response = requests.post(requestString, files=files)
-            logging.info(response)
-            return recievedData(response.ok, statusCode=response.status_code, content=response.content)
+            request: requests.Response = requests.get(requestString)
+            # return True/False for a status code of 2XX, the status code itself and the response content
+            return recievedData(request.ok, statusCode=request.status_code, content=request.content)
         except Exception as e:
-            return recievedData(isOk=False, isErr=True, errDetails=f"Error making request {requestString}, {str(e)}")
+            return recievedData(isOk=False, isErr=True, errDetails=f"Error making request {requestString}, {str(e)}" )

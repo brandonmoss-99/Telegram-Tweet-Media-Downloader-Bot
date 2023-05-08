@@ -12,3 +12,4 @@ twitter_cookies.txt
 
 # Ignore any downloaded data
 data
+/test.py

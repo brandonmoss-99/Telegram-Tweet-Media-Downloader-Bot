@@ -41,6 +41,7 @@ class Config:
         rawAllowedIds: str|None = os.environ.get("ALLOWED_IDS")
         logging.debug("Getting T_TOKEN environment variable")
         rawToken: str|None = os.environ.get("T_TOKEN")
+        chatid: str|None = os.environ.get("CHATID")
 
         # Filter the ID list to only those which are digits, then convert those into ints
         logging.info("Parsing ALLOWED_IDS list")
@@ -58,8 +59,11 @@ class Config:
         else:
             logging.error("Token parse found empty token, Telegram will reject this bot")
             self.setToken("")
-    
 
+        if type(chatid) == str:
+            self.setChatid(str(chatid))
+            logging.debug("chatid parse successful")
+    
     def setAllowedIds(self, allowed: list) -> None:
         self.allowedIds: list = allowed
     
@@ -67,6 +71,8 @@ class Config:
     def setToken(self, t: str) -> None:
         self.tToken: str = t
 
+    def setChatid(self, c: str) -> None:
+        self.cChatid: str = c
 
     def setLogLevel(self, l: int) -> None:
         self.logLevel: int = l

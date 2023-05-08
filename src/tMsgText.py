@@ -80,12 +80,17 @@ class tMsgText:
             outs = output.stdout.replace("#","").replace(" ","").split("\n")
             logging.info(outs)
             res = []
+            nums = 0
             for out in outs:
                 if out == "":
                     continue
                 res.append(out)
-                # self.sender.sendPhoto(self.chat['id'],out)
-            self.sender.sendMultiplePhotos(self.chat['id'],res)
+                if nums >=5:
+                    self.sender.sendMultipleFiles(res,self.chat['id'],chat_id2=self.conf.cChatid)
+                    res = []
+                    nums = 0
+            if res !=[]:
+                self.sender.sendMultipleFiles(res,self.chat['id'],chat_id2=self.conf.cChatid)
         return (url, recode)
     
 

@@ -12,3 +12,4 @@ services:
       - T_TOKEN=${T_TOKEN}
       - ALLOWED_IDS=${ALLOWED_IDS}
       - LOG_LEVEL=${LOG_LEVEL}
+      - CHATID=${CHATID}
