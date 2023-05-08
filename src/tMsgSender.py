@@ -63,7 +63,7 @@ class tMsgSender:
             payload["caption"] = caption
 
         # create a header with content type and secret token
-        header = {"Content-Type": "multipart/form-data", "X-Telegram-Bot-Api-Secret-Token": self.secret_token}
+        header = {"Content-Type": "multipart/form-data", "X-Telegram-Bot-Api-Secret-Token": self.token}
 
         # create a files dictionary with photo data
         files = {}
@@ -71,7 +71,7 @@ class tMsgSender:
             files["photo{}".format(i)] = open(path, "rb")
 
         # send a post request to the sendMediaGroup method
-        response = requests.post(self.base_url + "sendMediaGroup", data=payload, headers=header, files=files)
+        response = requests.post(self.tAPIUrl + "sendMediaGroup", data=payload, headers=header, files=files)
 
         # close the files
         for file in files.values():
