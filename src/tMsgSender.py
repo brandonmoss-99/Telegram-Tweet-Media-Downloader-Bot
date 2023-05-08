@@ -53,7 +53,7 @@ class tMsgSender:
         files = []
         for i, path in enumerate(photo_paths):
             files.append(("photo" + str(i), open(path, "rb")))
-        
+        logging.info("#####################")
         return self.sendRequest(["sendMediaGroup", "chat_id", chat_id], files=files)
 
     def sendRequest(self, msgParams: list, files=None) -> recievedData:
