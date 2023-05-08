@@ -49,7 +49,7 @@ class tMsgSender:
     # def sendVideo(self, video_path: str, chat_id: str) -> recievedData:
     #     return self.sendRequest(["sendVideo", "chat_id", chat_id], files={"video": open(video_path, "rb")})
 
-    def sendMultiplePhotos(self, chat_id: str, photo_paths: list, caption: str=None):
+    def sendMultiplePhotos(self,photo_paths: list, chat_id: str,  caption: str=None):
         """
         Send multiple photos in a single message
         
