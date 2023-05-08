@@ -48,13 +48,15 @@ class tMsgSender:
 
     def sendVideo(self, video_path: str, chat_id: str) -> recievedData:
         return self.sendRequest(["sendVideo", "chat_id", chat_id], files={"video": open(video_path, "rb")})
-    
+
     def sendMultiplePhotos(self, photo_paths, chat_id: str) -> recievedData:
-        files = []
-        for i, path in enumerate(photo_paths):
-            files.append(("photo" + str(i), open(path, "rb")))
+        files = [('photo' + str(i), open(photo_path, 'rb')) for i, photo_path in enumerate(photo_paths)]
         logging.info("#####################")
-        return self.sendRequest(["sendMediaGroup", "chat_id", chat_id], files=files)
+        logging.info(files)
+        params = ['sendMediaGroup', 'chat_id', chat_id]
+
+        return self.sendRequest(params, files)
+
 
     def sendRequest(self, msgParams: list, files=None) -> recievedData:
         requestString = self.generateRequest(msgParams)
