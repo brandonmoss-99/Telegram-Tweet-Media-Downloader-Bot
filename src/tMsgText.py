@@ -82,6 +82,7 @@ class tMsgText:
             res = []
             nums = 0
             for out in outs:
+                nums +=1
                 if out == "":
                     continue
                 res.append(out)
