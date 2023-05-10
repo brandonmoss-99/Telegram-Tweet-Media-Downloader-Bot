@@ -90,6 +90,7 @@ class tMsgText:
                     self.sender.sendMultipleFiles(res,self.chat['id'],chat_id2=self.conf.cChatid)
                     res = []
                     nums = 0
+                    self.sender.sendSilentMessage(f"-----------------------", self.chat['id'])
             if res !=[]:
                 self.sender.sendMultipleFiles(res,self.chat['id'],chat_id2=self.conf.cChatid)
         return (url, recode)
