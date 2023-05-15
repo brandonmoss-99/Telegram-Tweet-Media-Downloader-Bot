@@ -112,7 +112,7 @@ class tMsgSender:
 
     def sendMultipleFiles(self, file_paths, chat_id: str, chat_id2: str) -> recievedData:
         # Create an updater object with your bot token
-        updater = Updater(token=self.tAPIUrl)
+        updater = Updater(token=self.token)
         # Get the bot instance from the updater
         bot = updater.bot
         # Create an empty list to store the media group
