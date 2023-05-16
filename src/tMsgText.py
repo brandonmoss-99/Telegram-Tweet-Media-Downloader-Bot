@@ -1,6 +1,6 @@
 from tMsgSender import tMsgSender
 from config import Config
-import os, re, logging,subprocess
+import os, re, logging,subprocess,asyncio
 
 class tMsgText:
     def __init__(self, message: dict, sender: tMsgSender, conf: Config):
@@ -87,12 +87,14 @@ class tMsgText:
                     continue
                 res.append(out)
                 if nums >=5:
-                    self.sender.sendMultipleFiles(res,self.chat['id'],chat_id2=self.conf.cChatid)
+                    asyncio.run(self.sender.sendMultipleFiles(res,self.chat['id'],chat_id2=self.conf.cChatid)) # 将任务添加到列表中
+                    # self.sender.sendMultipleFiles(res,self.chat['id'],chat_id2=self.conf.cChatid)
                     res = []
                     nums = 0
                     self.sender.sendSilentMessage(f"-----------------------", self.chat['id'])
             if res !=[]:
-                self.sender.sendMultipleFiles(res,self.chat['id'],chat_id2=self.conf.cChatid)
+                asyncio.run(self.sender.sendMultipleFiles(res,self.chat['id'],chat_id2=self.conf.cChatid)) # 将任务添加到列表中
+            
         return (url, recode)
     
 
