@@ -1,4 +1,4 @@
-import time, sys, requests, random, json, logging
+import time, sys, requests, random, json, logging, os
 from tMsgSender import tMsgSender
 from tMsgFetcher import tMsgFetcher, messageInfo
 from tMsgText import tMsgText
@@ -75,6 +75,7 @@ if __name__ == '__main__':
     conf: Config = Config()
     logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s', level=conf.logLevel)
     conf.loadEnvVars()
+    logging.info(f"Using gallery-dl version: {os.system(f"gallery-dl --version")}")
 
     # Telegram Polling Configuration
     tBot: bot = bot()
