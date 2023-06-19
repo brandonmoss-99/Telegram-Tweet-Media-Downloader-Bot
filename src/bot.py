@@ -75,7 +75,8 @@ if __name__ == '__main__':
     conf: Config = Config()
     logging.basicConfig(format='%(asctime)s %(levelname)s - %(message)s', level=conf.logLevel)
     conf.loadEnvVars()
-    logging.info(f"Using gallery-dl version: {os.system(f"gallery-dl --version")}")
+    galleryDlVersion = os.system(f"gallery-dl --version")
+    logging.info(f"Using gallery-dl version: {galleryDlVersion}")
 
     # Telegram Polling Configuration
     tBot: bot = bot()
