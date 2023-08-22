@@ -16,8 +16,9 @@ class Test_regexParse(unittest.TestCase):
             ("https://twitter.com/testUser/status/1234567898765432125?s=12&t=123456789", "https://twitter.com/testUser/status/1234567898765432125"),
             ("https://twitter.com/test_User/status/1234567898765432126?s=12&t=123456789", "https://twitter.com/test_User/status/1234567898765432126"),
             ("https://twitter.com/test_User12345/status/1234567898765432127?s=12&t=123456789", "https://twitter.com/test_User12345/status/1234567898765432127"),
-            ("https://vxtwitter.com/test_User12345/status/1234567898765432127?s=12&t=123456789", "https://vxtwitter.com/test_User12345/status/1234567898765432127"),
-            ("https://fxtwitter.com/test_User12345/status/1234567898765432127?s=12&t=123456789", "https://fxtwitter.com/test_User12345/status/1234567898765432127"),
+            ("https://vxtwitter.com/test_User12345/status/1234567898765432127?s=12&t=123456789", "https://twitter.com/test_User12345/status/1234567898765432127"),
+            ("https://fxtwitter.com/test_User12345/status/1234567898765432127?s=12&t=123456789", "https://twitter.com/test_User12345/status/1234567898765432127"),
+            ("https://x.com/test_User12345/status/1234567898765432127?s=12&t=123456789", "https://twitter.com/test_User12345/status/1234567898765432127"),
         ]
         for url in urls:
             msg = json.loads(f'{{"message_id": 1, "from": {{"id": 12345678, "is_bot": false, "first_name": "test_fName", "username": "test_username", "language_code": "en"}}, "chat": {{"id": 12345678, "first_name": "test_fName", "username": "test_username", "type": "private"}}, "date": 1234567890, "text": "{url[0]}"}}')
