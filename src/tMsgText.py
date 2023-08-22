@@ -69,8 +69,13 @@ class tMsgText:
         logging.debug(f"Parsing text against regex")
         urls: list[str] = re.findall(self.urlRegex, toParse)
         logging.debug(f"Found {len(urls)} matches")
-        return urls
-    
+        
+        # Replace 'value' in http(s)://<value>.com with 'twitter'. This will
+        # attempt to convert URLs like vxtwitter.com, fxtwitter.com, x.com, etc
+        # into twitter.com URLs (assuming they're interchangeable)
+        convertedUrls: list[str] = list(map(lambda x: re.sub(pattern=r'(http[s]?://)([a-zA-Z]+|[0-9]+|[^?\s]+)(.com)', repl=r'\1twitter\3', string=x), urls))
+        logging.debug(f"Converted {len(convertedUrls)} matches into twitter.com format URLs")
+        return convertedUrls
 
     def downloadUrl(self, url: str) -> tuple[str, int]:
         logging.info(f"Attempting to gallery-dl download content from: {url}")
