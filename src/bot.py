@@ -7,7 +7,7 @@ from config import Config
 class bot:
     def __init__(self):
         self.msgOffset: int = 0
-        self.pollTimeout: int = 120
+        self.pollTimeout: int = 50
         logging.info(f"Using max long polling timeout of {self.pollTimeout} seconds")
 
     def getHelp(self):
