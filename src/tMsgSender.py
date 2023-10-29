@@ -51,7 +51,7 @@ class tMsgSender:
             # Use both a connect and read timeout. Should establish a connection
             # to Telegram within the connect timeout, but shouldn't consider the
             # connection to have been broken until after the long polling duration
-            request: requests.Response = requests.get(requestString, timeout=(5, 50))
+            request: requests.Response = requests.get(requestString, timeout=(5, 60))
             # return True/False for a status code of 2XX, the status code itself and the response content
             return recievedData(request.ok, statusCode=request.status_code, content=request.content)
         except Exception as e:
