@@ -1,1 +1,1 @@
-gallery-dl==1.26.5
+gallery-dl==1.26.6
