@@ -13,3 +13,10 @@ updates:
       interval: "weekly"
     assignees:
       - "brandonmoss-99"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "brandonmoss-99"
