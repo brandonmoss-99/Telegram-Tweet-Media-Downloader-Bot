@@ -1,0 +1,13 @@
+name: Dependabot Auto Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot:
+    uses: brandonmoss-99/gha-workflows/.github/workflows/dependabot-auto-merge.yml@main
