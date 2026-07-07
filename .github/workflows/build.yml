@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - "main"
+  workflow_run:
+    workflows: ["Dependabot Auto Merge"]
+    types:
+      - completed
 
 jobs:
   build:
